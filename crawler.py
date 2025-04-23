@@ -18,9 +18,9 @@ logging.basicConfig(
 )
 
 # 设置参数
-START_PAGE = 13
-END_PAGE = 14
-BASE_URL = "https://guidelines.ebmportal.com/?fv%5Bfield_collection_field_4%5D%5B2942%5D=2942&fv%5Bfield_collection_field_4%5D%5B2796%5D=2796&l=10&page={}"
+START_PAGE = 16
+END_PAGE = 17
+BASE_URL = "https://guidelines.ebmportal.com/?fv%5Bfield_collection_field_4%5D%5B2942%5D=2942&fv%5Bfield_collection_field_4%5D%5B2796%5D=2796&l=50&page={}"
 DOWNLOAD_DIR = "/Users/xjz/Desktop/Crawled_1"
 
 # 创建下载目录
@@ -115,7 +115,7 @@ def process_page(page, page_url):
 
                 # 检查是否是PDF链接或"view publication"链接
                 if href.lower().endswith('.pdf') or 'pdf' in href.lower() or 'view publication' in text.lower():
-                    pdf_links.append((href, text))
+                    pdf_links.append(href)
             except Exception as e:
                 logging.error(f"处理链接失败: {str(e)}")
                 continue
@@ -127,8 +127,10 @@ def process_page(page, page_url):
         logging.info(f"找到 {len(pdf_links)} 个PDF链接")
         success_count = 0
         
-        for url, title in pdf_links:
-            if download_pdf(url, title):
+        for pdf_url in pdf_links:
+            # 从 URL 提取真正的文件名
+            filename = unquote(pdf_url.split('/')[-1])
+            if download_pdf(pdf_url, filename):
                 success_count += 1
             random_delay()
 
